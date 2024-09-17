@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attribute;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -13,8 +14,10 @@ class ProductController extends Controller
     if (!$product->view) {
         abort(404);
     }
+
+    $attributes = Attribute::all();
     
-    return view('templates.'.$product->view.'.index', compact('product'));
+    return view('templates.'.$product->view.'.index', compact('product','attributes'));
 }
 
 public function edit(Order $order)

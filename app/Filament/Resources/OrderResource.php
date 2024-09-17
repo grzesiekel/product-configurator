@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\OrderResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\OrderResource\RelationManagers;
+use Filament\Navigation\NavigationGroup;
 
 class OrderResource extends Resource
 {
@@ -73,6 +74,14 @@ class OrderResource extends Resource
                         
                     ])
                     ->default('unsettled'),
+                    Forms\Components\Select::make('source')
+                    ->label('Źródło')
+                    ->options([
+                        'shop' => 'Sklep',
+                        'net' => 'Net',
+                        
+                    ])
+                    ->default('shop'),
                 Forms\Components\TextInput::make('deposit_amount')
                     ->label('Zaliczka')
                     ->numeric()
@@ -122,14 +131,21 @@ class OrderResource extends Resource
                         'settled' => 'Rozliczone',
                     ])
                     ->disablePlaceholderSelection(),
+                    Tables\Columns\SelectColumn::make('source')
+                    ->label('Źródło')
+                    ->options([
+                        'shop' => 'Sklep',
+                        'net' => 'Net',
+                    ])
+                    ->disablePlaceholderSelection(),
                 Tables\Columns\TextColumn::make('deposit_amount')
                     ->label('Zaliczka')
                     ->money('pln')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('total_price')
-                    ->label('Łączna cena')
-                    ->money('pln')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('total_price')
+                //     ->label('Łączna cena')
+                //     ->money('pln')
+                //     ->sortable(),
                     
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -148,6 +164,13 @@ class OrderResource extends Resource
                         'completed' => 'Gotowe',
                         'closed' => 'Zakończone',
                         'declined' => 'Odrzucone',
+                    ]),
+                    SelectFilter::make('source')
+                    ->label('Żródło')
+                    ->options([
+                        'shop' => 'Sklep',
+                        'net' => 'Net',
+                        
                     ])
             ])
             ->actions([
@@ -178,8 +201,11 @@ class OrderResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
+            
             ->defaultSort('created_at', 'desc');
     }
+   
+   
 
     public static function getRelations(): array
     {

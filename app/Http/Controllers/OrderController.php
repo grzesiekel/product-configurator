@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attribute;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -28,6 +29,7 @@ class OrderController extends Controller
         // Tworzenie nowego zamówienia
         $order = new Order();
         $order->cart = $cartData; // Laravel automatycznie zakoduje to z powrotem do JSON
+        $order->product()->associate($request->product_id);
 
         $order->save();
         dd('sukces');
@@ -46,7 +48,9 @@ class OrderController extends Controller
             abort(404);
         }
 
-        return view('templates.' . $product->view . '.edit', compact('product', 'order'));
+        $attributes = Attribute::all();
+
+        return view('templates.' . $product->view . '.edit', compact('product', 'order', 'attributes'));
     }
 
     public function update(Request $request, Order $order)
@@ -59,5 +63,12 @@ class OrderController extends Controller
         $order->save();
 
         return back();
+    }
+
+    public function print(Order $order)
+    {
+        $cartData = $order->cart;
+
+        return view('print', compact('cartData'));
     }
 }

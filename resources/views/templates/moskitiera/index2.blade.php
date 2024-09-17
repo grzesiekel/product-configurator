@@ -1,5 +1,6 @@
 <x-layout>
-@php
+
+    @php
     $attribute = $attributes->firstWhere('id', 1);
     @endphp
 
@@ -11,16 +12,16 @@
             </div>
             
         </div> --}}
-       
+
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
-                role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+            role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
         @endif
-        
+
         <div class="flex flex-wrap -mx-4">
-            
+
             <!-- Formularz produktu -->
             <div class="w-full md:w-1/2 px-4 mb-8">
                 <h2 class="text-2xl font-bold mb-4">{{$product->name}}</h2>
@@ -51,7 +52,6 @@
                         </select>
                     </div>
                     @endif
-
                     <div class="mb-4">
                         <label for="thickness" class="block mb-2">Ilość:</label>
                         <input type="number" id="quantity" x-model="product.quantity" required
@@ -66,10 +66,10 @@
             <div class="w-full md:w-1/2 px-4">
                 <h2 class="text-2xl font-bold mb-4">Koszyk</h2>
                 <div class="bg-white p-4 rounded shadow">
-                    <!-- <template x-if="cart.length === 0">
+                    <template x-if="cart.length === 0">
                         <p>Koszyk jest pusty</p>
-                    </template> -->
-                    <template x-if="cart.length >= 0">
+                    </template>
+                    <template x-if="cart.length > 0">
                         <div>
                             <template x-for="(item, index) in cart" :key="index">
                                 <div class="mb-2 p-2 border rounded">
@@ -84,12 +84,22 @@
                                 <p class="font-bold"
                                     x-text="`Suma metrów bieżących: ${totalRunningMeters.toFixed(0)}m`"></p>
                             </div>
-                            <form action="{{ route('order.update',$order) }}" method="POST" @submit="onSubmitOrder"
+                            <form action="{{ route('order.store') }}" method="POST" @submit="onSubmitOrder"
                                 class="mt-4">
                                 @csrf
                                 <input type="hidden" name="cart" :value="JSON.stringify(cart)">
                                 <input type="hidden" name="totalRunningMeters" :value="totalRunningMeters.toFixed(2)">
-                                
+                                <div class="mb-4">
+                                    <label for="email" class="block mb-2">Email:</label>
+                                    <input type="email" id="email" name="email"
+                                        class="w-full p-2 border rounded">
+                                </div>
+                                <div class="mb-4">
+                                    <label for="phone" class="block mb-2">Telefon:</label>
+                                    <input type="tel" id="phone" name="phone"
+                                        class="w-full p-2 border rounded">
+                                </div>
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
                                 <button type="submit"
                                     class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Zamów</button>
                             </form>
@@ -98,7 +108,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 
     <script>
@@ -109,9 +119,9 @@
                     height: '',
                     thickness: '',
                     color: '',
-                    quantity:''
+                    quantity: ''
                 },
-                cart: JSON.parse('{!! isset($order->cart) ? json_encode($order->cart) : "[]" !!}'),
+                cart: JSON.parse(localStorage.getItem('cart') || '[]'),
                 get totalRunningMeters() {
                     const total = this.cart.reduce((total, item) => {
                         return total + this.calculateRunningMeters(item, false);
@@ -119,7 +129,7 @@
                     return Math.ceil(total);
                 },
                 calculateRunningMeters(item, round = true) {
-                    const meters = ((parseFloat(item.width) + parseFloat(item.height)) * 2 / 100)*item.quantity;
+                    const meters = ((parseFloat(item.width) + parseFloat(item.height)) * 2 / 100) * item.quantity;
                     return round ? meters.toFixed(2) : meters;
                 },
                 addToCart() {
@@ -141,7 +151,8 @@
                         width: '',
                         height: '',
                         thickness: '',
-                        color: ''
+                        color: '',
+                        quantity: ''
                     };
                 },
                 clearCart() {

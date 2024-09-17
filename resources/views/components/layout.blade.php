@@ -22,6 +22,11 @@
                 margin-bottom: 1rem;
             }
         }
+
+        @media print {
+            @page { margin: 0; }
+            body { margin: 1.6cm; }
+        }
     </style>
 
     <!-- Scripts -->
@@ -31,7 +36,7 @@
 <body class="font-sans antialiased">
     <div class="min-h-screen bg-gray-100">
         
-        <main class="bg-gray-100 py-20">
+        <main class="bg-gray-100">
             {{ $slot }}
         </main>
     </div>

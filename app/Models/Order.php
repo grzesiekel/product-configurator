@@ -23,6 +23,7 @@ class Order extends Model
         'notes',
         'product_id',
         'cart',
+        'source'
     ];
 
     protected $casts = [
@@ -30,6 +31,7 @@ class Order extends Model
         'total_price' => 'decimal:2',
         'deposit_amount'=>'decimal:2',
         'status' => 'string',
+        'source'=>'string',
         'cart' => 'array',
     ];
 
